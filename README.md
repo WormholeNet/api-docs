@@ -10,6 +10,14 @@ There are no client libraries available at the moment.
 
 It creates a new user in the system and sends a confirmation email with your access token.
 
+Endpoint:
+
+> /api/signup
+
+Parameters:
+
+> email - *email address*
+
 Example:
 
     curl -H "Content-Type: application/json" -X POST -d '{"email":"user@example.com"}' https://wormhole.network/api/signup/
@@ -20,9 +28,23 @@ Returns:
 
 ##Authenticated requests - Read-only
 
+In order to issue authenticated requests, you need to include your API token as your authentication header.
+
+> Authorization: Token xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+The HTTP method for all the read-only requests is **GET**
+
 ###List hubs
 
 Returns a list of hubs, their server's FQDN and number of created users.
+
+Endpoint:
+
+> /api/hubs
+
+Parameters:
+
+> None
 
 Example:
 
@@ -36,6 +58,16 @@ Returns:
 
 Returns the same details, but for only a specific hub.
 
+Endpoint:
+
+> /api/hubs/*hubname*
+
+Parameters:
+
+> hubname - *Name of the hub you'd like to get details from*
+
+Example:
+
     curl -H "Authorization: Token cd7312cdddefb8bsdf42s961920b1122b26282c7" https://wormhole.network/api/hubs/WebsiteHUB/ 
 
 Returns:
@@ -46,6 +78,15 @@ Returns:
 ###List users in a hub
 
 Returns a list of users in a hub.
+
+Endpoint:
+
+> /api/hubs/*hubname*/users/
+
+Parameters:
+
+> hubname - *Name of the hub you'd like to pull the list of users from*
+
 
 Example:
 
@@ -60,6 +101,16 @@ Returns:
 
 Returns details for a specific hub user.
 
+Endpoint:
+
+> /api/hubs/*hubname*/users/*username*
+
+Parameters:
+
+> hubname - *Name of the hub where the user exists*
+
+> username - *Username of the hub user you'd like to get details*
+
 Example:
 
     curl -H "Authorization: Token cd7312cdddefb8bsdf42s961920b1122b26282c7" https://wormhole.network/api/hubs/WebsiteHUB/users/myuser/details/
@@ -72,6 +123,17 @@ Returns:
 ###Download config file for a user
 
 Downloads the config file needed to connect to your Wormhole hub.
+
+Endpoint:
+
+> /api/hubs/*hubname*/users/*username*/configfile/
+
+Parameters:
+
+> hubname - *Name of the hub where the user exists*
+
+> username - *Username of the hub user owner of the configuration file*
+
 
 Example:
 
@@ -133,3 +195,70 @@ Returns:
             }
     }
     
+##Authenticated requests - Read/Write
+
+In order to issue authenticated requests, you need to include your API token as your authentication header.
+
+> Authorization: Token xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+The HTTP method might vary from command to command and it is specified under each command's section.
+
+###Create a new hub
+
+Creates a new hub and returns the details.
+
+Endpoint:
+
+> /api/hubs
+
+Parameters:
+
+Passed as JSON
+
+> name - *Name of the new hub you want to create*
+
+> server - *Name of the server where your new hub will be deployed*
+
+Method:
+
+> POST
+
+Example:
+
+    curl -X POST -H "Content-Type: application/json" -H "Authorization: Token cd7312cdddefb8bsdf42s961920b1122b26282c7" -d '{"name":"IntranetHUB","server":"amsterdam-hub.wormhole.network"}' https://wormhole.network/api/hubs/
+
+Returns:
+
+    {"name":"IntranetHUB","server":"amsterdam-hub.wormhole.network","num_users":0}
+
+###Create a new hub user    
+
+Creates a new hub user and returns the details.
+
+Endpoint:
+
+> /api/hubs/*hubname*/users/
+
+Parameters:
+
+In URL
+
+> hubname - *Name of the hub where the user will be created*
+
+Passed as JSON
+
+> username - *Username for the new user*
+
+> password - *Password for the new user*
+
+Method:
+
+> POST
+
+Example:
+
+    curl -X POST -H "Content-Type: application/json" -H "Authorization: Token cd7312cdddefb8bsdf42s961920b1122b26282c7" -d '{"username":"user1","password":"Sup3rc0mpl3x"}' https://wormhole.network/api/hubs/IntranetHUB/users/
+
+Returns:
+
+    {"username":"user1"}    
